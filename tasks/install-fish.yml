@@ -1,0 +1,18 @@
+---
+- name: Install fish dependencies
+  ansible.builtin.package:
+    name: "{{ fish_dependencies }}"
+    state: present
+
+- name: Install fish packages
+  ansible.builtin.package:
+    name: "{{ fish_packages }}"
+    state: present
+
+- name: Set fish as default shell
+  ansible.builtin.user:
+    name: "{{ fish_user }}"
+    shell: /usr/bin/fish
+  loop: "{{ fish_users + [ansible_user] }}"
+  loop_control:
+    loop_var: fish_user

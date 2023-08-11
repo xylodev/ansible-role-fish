@@ -1,0 +1,31 @@
+---
+- name: Clone oh-my-fish repository
+  ansible.builtin.git:
+    repo: "{{ fish_omf_repo_url }}"
+    dest: "{{ fish_omf_src_path }}"
+    version: master
+  register: fish_omf_repo
+
+- name: Install oh-my-fish
+  ansible.builtin.command: "{{ fish_omf_src_path }}/bin/install --offline --noninteractive --yes"
+  become_user: "{{ fish_user }}"
+  loop: "{{ fish_users + [ansible_user] }}"
+  loop_control:
+    loop_var: fish_user
+  when: not fish_omf_repo.before
+
+- name: Install oh-my-fish packages
+  ansible.builtin.command: "fish -c 'omf install {{ fish_omf_packages | join(' ') }}'"
+  become_user: "{{ fish_user }}"
+  loop: "{{ fish_users + [ansible_user] }}"
+  loop_control:
+    loop_var: fish_user
+  when: not fish_omf_repo.before
+
+- name: Keep oh-my-fish up to date
+  ansible.builtin.command: "fish -c 'omf update'"
+  become_user: "{{ fish_user }}"
+  loop: "{{ fish_users + [ansible_user] }}"
+  loop_control:
+    loop_var: fish_user
+  when: fish_omf_repo.before != fish_omf_repo.after
