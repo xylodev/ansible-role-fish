@@ -1,0 +1,23 @@
+---
+- name: "Get fish config path for {{ fish_user }}"
+  ansible.builtin.command: "fish -c 'echo $__fish_config_dir/config.fish'"
+  become_user: "{{ fish_user }}"
+  register: fish_config_path
+  changed_when: false
+
+- name: "Make sure fish config file for {{ fish_user }} exists"
+  ansible.builtin.copy:
+    dest: "{{ fish_config_path.stdout }}"
+    content: ''
+    force: false
+    owner: "{{ fish_user }}"
+    group: "{{ fish_user }}"
+    mode: 0644
+
+- name: "Set fish config for {{ fish_user }}"
+  ansible.builtin.lineinfile:
+    path: "{{ fish_config_path.stdout }}"
+    line: "{{ fish_config_option }}"
+  loop: "{{ fish_config_options }}"
+  loop_control:
+    loop_var: fish_config_option

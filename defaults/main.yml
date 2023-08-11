@@ -1,0 +1,21 @@
+---
+fish_dependencies:
+  - git
+  - curl
+
+fish_packages:
+  - fish
+
+fish_users:
+  - root
+
+fish_config_options:
+  - "set -g fish_escape_delay_ms 200"
+
+fish_omf_repo_url: https://github.com/oh-my-fish/oh-my-fish
+fish_omf_src_path: /usr/local/src/oh-my-fish
+
+fish_omf_packages:
+  - sudope
+  - pyenv
+  - agnoster
